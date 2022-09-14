@@ -1,0 +1,17 @@
+{
+    "presets": [
+      "@babel/preset-env",
+      [
+        // convert JSX syntax
+        "@babel/preset-react",
+        {
+          // auto imports the functions that JSX transpiles to
+          "runtime": "automatic"
+        }
+      ],
+      "@babel/preset-typescript"
+    ],
+    // enables the re-use of Babel's injected helper code to save on codesize
+    // all of the helpers will reference the module @babel/runtime to avoid duplication across your compiled output. The runtime will be compiled into your build.
+    "plugins": ["@babel/plugin-transform-runtime"]
+}

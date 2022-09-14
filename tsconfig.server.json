@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",          
+        "module": "commonjs",
+        "rootDir": "./src/server",
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noEmitOnError": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "src/server"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
