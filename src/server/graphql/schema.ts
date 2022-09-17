@@ -24,12 +24,6 @@ const RootQuery = new GraphQLObjectType({
         todos: {
             type: new GraphQLList(TodoType),
             resolve(parent, args){
-                // return [
-                //     {
-                //         id: 1,
-                //         todo: 'popopopo'
-                //     }
-                // ]
                 return Todo.find()
             }
         }
@@ -37,7 +31,60 @@ const RootQuery = new GraphQLObjectType({
 })
 
 // mutation
+const mutation = new GraphQLObjectType({
+    name: 'mutation',
+    fields: {
+        // add todo
+        addTodo: {
+            type: TodoType,
+            args: {
+                todo: {
+                    type: new GraphQLNonNull(GraphQLString)
+                }
+            },
+            resolve(parent, args){
+                const newTodo = new Todo({
+                    todo: args.todo
+                })
+
+                return newTodo.save()
+            }
+        },
+        deleteTodo: {
+            type: TodoType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent, args){
+                return Todo.findByIdAndDelete({
+                    _id: args.id
+                })
+            }
+        },
+        editTodo: {
+            type: TodoType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID)},
+                todo: { type: new GraphQLNonNull(GraphQLString)}
+            },
+            resolve(parent, args){
+                return Todo.findByIdAndUpdate(
+                    args.id,
+                    {
+                        $set: {
+                            todo: args.todo
+                        }
+                    },
+                    {
+                        returnDocument: 'after'
+                    }
+                )
+            }
+        }
+    }
+})
 
 export default new GraphQLSchema({
     query: RootQuery,
+    mutation
 })

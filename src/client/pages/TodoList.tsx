@@ -6,7 +6,14 @@ import TodoForm from '../components/TodoForm'
 import type { Todo } from '../types/todo'
 import styles from '../styles/app.modules.css'
 import { GET_TODOS } from '../graphql/queries/todoQueries'
-import { useQuery } from '@apollo/client';
+import { ADD_TODO } from '../graphql/mutation/todoMutations'
+import { 
+    useMutation,
+    useQuery,
+    MutationFunctionOptions,
+    DefaultContext,
+    ApolloCache
+} from '@apollo/client';
 
 const TodoList = () => {
     const {
@@ -36,41 +43,72 @@ const TodoList = () => {
         [setNewTodo]
     )
 
-    const addTodoHandler = useCallback(
-        async (_newTodo: string) => {
-            if (_newTodo.length < 4) {
-                setIsValid(false)
-            } else {
-                const url = process.env.SERVER_BASEURL_DEVELOPMENT
-                if (!url) throw new Error('notfound fetch url')
-
-                console.log(_newTodo)
-
-                const res = await fetch(`${url}/todo`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    mode: 'cors',
-                    body: JSON.stringify({
-                        todo: _newTodo
-                    })
-                })
-                const { result } = await res.json()
-
-                dispatch({
-                    type: ActionType.ADD_TODO,
-                    payload: {
-                        id: result.id,
-                        todo: result.todo
-                    }
-                })
-                setIsValid(true)
-                setNewTodo('')
+    const [addTodo] = useMutation(ADD_TODO, {
+        variables: { todo: newTodo },
+        update(cache, { data: {addTodo }}){
+            const { todos } = cache.readQuery({ query: GET_TODOS }) as {
+                todos: Todo[]
             }
-        },
-        [dispatch]
-    )
+
+        
+            cache.writeQuery({
+                query: GET_TODOS,
+                data: {
+                    todos: [...todos, addTodo ]
+                }
+            })
+        }
+    })
+
+    const addTodoHandler = () => {
+        if (newTodo.length < 4) {
+            setIsValid(false)
+        } else {
+            addTodo()
+            setIsValid(true)
+            setNewTodo('')
+        }
+    }
+
+    /*
+    * @rest api
+    *
+    * const addTodoHandler = useCallback(
+    *     async (_newTodo: string) => {
+    *         if (_newTodo.length < 4) {
+    *             setIsValid(false)
+    *         } else {
+    *             const url = process.env.SERVER_BASEURL_DEVELOPMENT
+    *             if (!url) throw new Error('notfound fetch url')
+
+    *             console.log(_newTodo)
+
+    *             const res = await fetch(`${url}/todo`, {
+    *                 method: 'POST',
+    *                 headers: {
+    *                     'Content-Type': 'application/json'
+    *                 },
+    *                 mode: 'cors',
+    *                 body: JSON.stringify({
+    *                     todo: _newTodo
+    *                 })
+    *             })
+    *             const { result } = await res.json()
+
+    *             dispatch({
+    *                 type: ActionType.ADD_TODO,
+    *                 payload: {
+    *                     id: result.id,
+    *                     todo: result.todo
+    *                 }
+    *             })
+    *             setIsValid(true)
+    *             setNewTodo('')
+    *         }
+    *     },
+    *     [dispatch]
+    * )
+    */
 
     useEffect(() => {
         startLoad()
@@ -95,7 +133,7 @@ const TodoList = () => {
                 />
                 <Button
                     className={styles.add_button}
-                    onClick={() => addTodoHandler(newTodo)}
+                    onClick={() => addTodoHandler()}
                 >
                     add
                 </Button>
