@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react'
 import Button from './Button'
-import { useTodo, ActionType } from '../Store/Store'
 import type { Todo } from '../types/todo'
 import styles from '../styles/app.modules.css'
 import { useMutation } from '@apollo/client'
@@ -9,7 +8,6 @@ import { DELETE_TODO, EDIT_TODO } from '../graphql/mutation/todoMutations'
 
 const TodoForm = ({ id, todo = '' }: Todo) => {
     const inputElement = useRef<HTMLInputElement>(null)
-    // const { dispatch } = useTodo()
 
     const [isEdit, setIsEdit] = useState<boolean>(false)
     const [isDelete, setIsDelte] = useState<boolean>(true)

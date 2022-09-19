@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+// import gql from 'graphql-tag'
 
 const ADD_TODO = gql`
     mutation addTodo($todo: String!){

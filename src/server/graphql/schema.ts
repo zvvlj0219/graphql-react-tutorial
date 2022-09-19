@@ -12,8 +12,8 @@ import {
 const TodoType = new GraphQLObjectType({
     name: 'Todo',
     fields:() => ({
-        id: { type: GraphQLID },
-        todo: { type: GraphQLString }
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        todo: { type: new GraphQLNonNull(GraphQLString) }
     })
 })
 
