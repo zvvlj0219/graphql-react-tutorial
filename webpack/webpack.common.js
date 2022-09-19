@@ -57,6 +57,11 @@ module.exports = {
         type: "asset/resource"
       },
       {
+        test: /\.graphql?$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader'
+      },
+      {
         test: [
           /\.(sass|scss|css)$/,
           /\.modules.(sass|scss|css)$/
